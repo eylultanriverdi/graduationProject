@@ -1,0 +1,198 @@
+package main
+
+import (
+	"context"
+	"log"
+	"time"
+
+	"example.com/greetings/models"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+type Repository struct {
+	client *mongo.Client
+}
+
+func NewRepository() *Repository {
+	uri := "mongodb+srv://project-Test:projectTest@cluster0.t0wnmxh.mongodb.net/test"
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &Repository{client: client}
+}
+
+func NewTestRepository() *Repository {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &Repository{client: client}
+}
+
+func GetCleanTestRepository() *Repository {
+	repository := NewTestRepository()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	blogDB := repository.client.Database("user")
+	err := blogDB.Drop(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return repository
+}
+
+func (repository *Repository) GetByEmail(email string) (*models.User, error) {
+	collection := repository.client.Database("user").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.UserEntity{}
+
+	filter := bson.M{"email": email}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	user := ConvertUserEntityToUser(entity)
+	return &user, nil
+}
+
+func ConvertUserEntityToUser(userEntity models.UserEntity) models.User {
+	return models.User{
+		ID:       userEntity.ID,
+		Name:     userEntity.Name,
+		Surname:  userEntity.Surname,
+		Email:    userEntity.Email,
+		Tel:      userEntity.Tel,
+		Password: userEntity.Password,
+	}
+}
+
+func ConvertProductEntityToProduct(productEntity models.ProductEntity) models.Product {
+	return models.Product{
+		ProductId:    productEntity.ProductId,
+		ProductName:  productEntity.ProductName,
+		Description:  productEntity.Description,
+		ProductImage: productEntity.ProductImage,
+	}
+}
+
+func (repository *Repository) CreateUser(user models.User) (*models.User, error) {
+	collection := repository.client.Database("user").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.UserEntity(user)
+	_, err := collection.InsertOne(ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.GetByUserId(user.ID)
+}
+
+func (repository *Repository) CreateProduct(product models.Product) (*models.Product, error) {
+	collection := repository.client.Database("product").Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.ProductEntity(product)
+	_, err := collection.InsertOne(ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.GetByProductId(product.ProductId)
+}
+
+func (repository *Repository) GetProducts() ([]models.Product, error) {
+	collection := repository.client.Database("product").Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	options := options.Find()
+	options.SetSort(bson.M{"_id": -1})
+
+	cur, err := collection.Find(ctx, bson.M{}, options)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	entities := []models.Product{}
+
+	for cur.Next(ctx) {
+		entity := models.ProductEntity{}
+		err := cur.Decode(&entity)
+		if err != nil {
+			log.Fatal(err)
+		}
+		product := ConvertProductEntityToProduct(entity)
+		entities = append(entities, product)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return entities, nil
+}
+
+func (repository *Repository) GetByUserId(userId string) (*models.User, error) {
+	collection := repository.client.Database("user").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.UserEntity{}
+
+	filter := bson.M{"uid": userId}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	user := ConvertUserEntityToUser(entity)
+	return &user, nil
+}
+
+func (repository *Repository) GetByProductId(productId string) (*models.Product, error) {
+	collection := repository.client.Database("product").Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.ProductEntity{}
+
+	filter := bson.M{"productId": productId}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	product := ConvertProductEntityToProduct(entity)
+	return &product, nil
+}
