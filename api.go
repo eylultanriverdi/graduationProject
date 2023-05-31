@@ -60,6 +60,7 @@ func (api *Api) ProductHandler(c *fiber.Ctx) error {
 		KetogenicDiet:     product.KetogenicDiet,
 		GlutenFree:        product.GlutenFree,
 		SaltFree:          product.SaltFree,
+		CalorieValue:      product.CalorieValue,
 	})
 
 	switch err {

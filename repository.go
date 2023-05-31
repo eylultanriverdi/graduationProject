@@ -95,10 +95,18 @@ func ConvertUserEntityToUser(userEntity models.UserEntity) models.User {
 
 func ConvertProductEntityToProduct(productEntity models.ProductEntity) models.Product {
 	return models.Product{
-		ProductId:    productEntity.ProductId,
-		ProductName:  productEntity.ProductName,
-		Description:  productEntity.Description,
-		ProductImage: productEntity.ProductImage,
+		ProductId:         productEntity.ProductId,
+		ProductName:       productEntity.ProductName,
+		Description:       productEntity.Description,
+		ProductImage:      productEntity.ProductImage,
+		ProteinValue:      productEntity.ProteinValue,
+		CarbohydrateValue: productEntity.CarbohydrateValue,
+		OilValue:          productEntity.OilValue,
+		GlutenValue:       productEntity.GlutenValue,
+		KetogenicDiet:     productEntity.KetogenicDiet,
+		GlutenFree:        productEntity.GlutenFree,
+		SaltFree:          productEntity.SaltFree,
+		CalorieValue:      productEntity.CalorieValue,
 	}
 }
 

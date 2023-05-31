@@ -63,7 +63,6 @@ func (service *Service) Register(register models.RegisterDTO) (*models.User, err
 }
 
 func (service *Service) GetProduct(product models.ProductCategoryDTO) (*models.Product, error) {
-
 	productCreate := models.Product{
 		ProductId:         GenerateUUID(8),
 		ProductName:       product.ProductName,
@@ -76,6 +75,7 @@ func (service *Service) GetProduct(product models.ProductCategoryDTO) (*models.P
 		KetogenicDiet:     product.KetogenicDiet,
 		GlutenFree:        product.GlutenFree,
 		SaltFree:          product.SaltFree,
+		CalorieValue:      product.CalorieValue,
 	}
 
 	createProduct, err := service.Repository.CreateProduct(productCreate)

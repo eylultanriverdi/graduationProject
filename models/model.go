@@ -39,6 +39,7 @@ type Product struct {
 	KetogenicDiet     string `json:"ketogenicDiet"`
 	GlutenFree        string `json:"glutenFree"`
 	SaltFree          string `json:"saltFree"`
+	CalorieValue      string `json:"calorieValue"`
 }
 
 type ProductEntity struct {
@@ -53,6 +54,7 @@ type ProductEntity struct {
 	KetogenicDiet     string `json:"ketogenicDiet"`
 	GlutenFree        string `json:"glutenFree"`
 	SaltFree          string `json:"saltFree"`
+	CalorieValue      string `json:"calorieValue"`
 }
 
 type ProductCategoryDTO struct {
@@ -67,4 +69,5 @@ type ProductCategoryDTO struct {
 	KetogenicDiet     string `json:"ketogenicDiet"`
 	GlutenFree        string `json:"glutenFree"`
 	SaltFree          string `json:"saltFree"`
+	CalorieValue      string `json:"calorieValue"`
 }
