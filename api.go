@@ -2,10 +2,9 @@ package main
 
 import (
 	"encoding/base64"
-	"net/http"
 
 	"example.com/greetings/models"
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Api struct {
@@ -18,39 +17,35 @@ func NewApi(service *Service) Api {
 	}
 }
 
-func (api *Api) RegisterHandler(c *fiber.Ctx) {
+func (api *Api) RegisterHandler(c *fiber.Ctx) error {
 	register := models.RegisterDTO{}
 	err := c.BodyParser(&register)
 	if err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 	createUser, err := api.Service.Register(register)
 
 	switch err {
 	case nil:
-		c.JSON(createUser)
-		c.Status(http.StatusCreated)
+		return c.JSON(createUser)
 	case UserAlreadyExistError, PasswordHashingError:
-		c.Status(fiber.StatusBadRequest)
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	default:
-		c.Status(fiber.StatusInternalServerError)
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 }
 
-func (api *Api) ProductHandler(c *fiber.Ctx) {
+func (api *Api) ProductHandler(c *fiber.Ctx) error {
 	product := models.ProductCategoryDTO{}
 	err := c.BodyParser(&product)
 	if err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
 	// Decode base64 string to byte array
 	productImage, err := base64.StdEncoding.DecodeString(product.ProductImage)
 	if err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
 	// Create Product instance with byte array
@@ -69,24 +64,21 @@ func (api *Api) ProductHandler(c *fiber.Ctx) {
 
 	switch err {
 	case nil:
-		c.JSON(createProduct)
-		c.Status(http.StatusCreated)
+		return c.JSON(createProduct)
 	case UserAlreadyExistError, PasswordHashingError:
-		c.Status(fiber.StatusBadRequest)
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	default:
-		c.Status(fiber.StatusInternalServerError)
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 }
 
-func (a *Api) GetProducts(c *fiber.Ctx) {
-
+func (a *Api) GetProducts(c *fiber.Ctx) error {
 	productsList, err := a.Service.GetProducts()
 
 	switch err {
 	case nil:
-		c.JSON(productsList)
-		c.Status(fiber.StatusOK)
+		return c.JSON(productsList)
 	default:
-		c.Status(fiber.StatusInternalServerError)
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 }
