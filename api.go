@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/base64"
+	"math"
+	"strconv"
 
 	"example.com/greetings/models"
 	"github.com/gofiber/fiber/v2"
@@ -74,11 +76,46 @@ func (api *Api) ProductHandler(c *fiber.Ctx) error {
 }
 
 func (a *Api) GetProducts(c *fiber.Ctx) error {
-	productsList, err := a.Service.GetProducts()
+	page := c.Query("page", "1")
+	limit := c.Query("limit", "10") // Varsayılan olarak 10 ürün gösterilecek
+
+	// page ve limit değerlerini integer'a dönüştürme işlemlerini yapabilirsiniz
+	pageNum, err := strconv.Atoi(page)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid page number")
+	}
+
+	limitNum, err := strconv.Atoi(limit)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid limit value")
+	}
+
+	productsList, err := a.Service.GetProducts(pageNum, limitNum)
 
 	switch err {
 	case nil:
-		return c.JSON(productsList)
+		// Sayfa sayısını ve toplam ürün sayısını hesapla
+		totalProducts, err := a.Service.GetTotalProducts()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
+
+		totalPages := int(math.Ceil(float64(totalProducts) / float64(limitNum)))
+
+		// Sayfalama bilgilerini dön
+		paginationInfo := map[string]interface{}{
+			"currentPage":   pageNum,
+			"totalPages":    totalPages,
+			"totalProducts": totalProducts,
+			"perPage":       limitNum,
+		}
+
+		response := map[string]interface{}{
+			"pagination": paginationInfo,
+			"products":   productsList,
+		}
+
+		return c.JSON(response)
 	default:
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}

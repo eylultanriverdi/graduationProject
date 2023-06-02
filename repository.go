@@ -138,13 +138,15 @@ func (repository *Repository) CreateProduct(product models.Product) (*models.Pro
 	return repository.GetByProductId(product.ProductId)
 }
 
-func (repository *Repository) GetProducts() ([]models.Product, error) {
+func (repository *Repository) GetProducts(skip int, limit int) ([]models.Product, error) {
 	collection := repository.client.Database("product").Collection("products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	options := options.Find()
 	options.SetSort(bson.M{"_id": -1})
+	options.SetSkip(int64(skip))
+	options.SetLimit(int64(limit))
 
 	cur, err := collection.Find(ctx, bson.M{}, options)
 	if err != nil {
@@ -203,4 +205,17 @@ func (repository *Repository) GetByProductId(productId string) (*models.Product,
 
 	product := ConvertProductEntityToProduct(entity)
 	return &product, nil
+}
+
+func (repository *Repository) GetTotalProducts() (int, error) {
+	collection := repository.client.Database("product").Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	count, err := collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return 0, err
+	}
+
+	return int(count), nil
 }

@@ -87,12 +87,24 @@ func (service *Service) GetProduct(product models.ProductCategoryDTO) (*models.P
 	return createProduct, nil
 }
 
-func (service *Service) GetProducts() ([]models.Product, error) {
-	productsList, err := service.Repository.GetProducts()
+func (service *Service) GetProducts(page int, limit int) ([]models.Product, error) {
+	skip := (page - 1) * limit
 
+	// Sayfalama parametrelerini kullanarak veri getirme işlemini gerçekleştirin
+	productsList, err := service.Repository.GetProducts(skip, limit)
 	if err != nil {
 		return nil, err
 	}
 
 	return productsList, nil
+}
+
+func (service *Service) GetTotalProducts() (int, error) {
+	// Veritabanında toplam ürün sayısını döndüren bir işlev ekleyin
+	total, err := service.Repository.GetTotalProducts()
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
