@@ -87,6 +87,16 @@ func (service *Service) GetProduct(product models.ProductCategoryDTO) (*models.P
 	return createProduct, nil
 }
 
+func (service *Service) CreateCalorieList(calorieList models.CalorieList) (*models.CalorieList, error) {
+	// Repository'de kayıt işlemi yap
+	createdList, err := service.Repository.CreateCalorieList(calorieList)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdList, nil
+}
+
 func (service *Service) GetProducts(page int, limit int) ([]models.Product, error) {
 	skip := (page - 1) * limit
 

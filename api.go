@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"math"
 	"strconv"
+	"time"
 
 	"example.com/greetings/models"
 	"github.com/gofiber/fiber/v2"
@@ -73,6 +74,44 @@ func (api *Api) ProductHandler(c *fiber.Ctx) error {
 	default:
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
+}
+
+func (api *Api) HandleAddListProduct(c *fiber.Ctx) error {
+	calorieList := models.CalorieList{}
+	err := c.BodyParser(&calorieList)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	}
+
+	// TotalCalorie hesaplaması
+	totalCalorie := 0
+	for _, product := range calorieList.Products {
+		calorie, err := strconv.Atoi(product.CalorieValue)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		}
+		totalCalorie += calorie
+	}
+	calorieList.TotalCalorie = strconv.Itoa(totalCalorie)
+
+	currentTime := time.Now().Format("2006-01-02")
+	calorieList.CreateDate = currentTime
+
+	// CalorieListId oluşturulması
+	calorieList.CalorieListId = GenerateUUID(8)
+
+	// Repository'de kayıt işlemi yap
+	createdList, err := api.Service.CreateCalorieList(calorieList)
+	if err != nil {
+		switch err {
+		case UserAlreadyExistError, PasswordHashingError:
+			return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		default:
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
+	}
+
+	return c.JSON(createdList)
 }
 
 func (a *Api) GetProducts(c *fiber.Ctx) error {

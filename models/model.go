@@ -71,3 +71,10 @@ type ProductCategoryDTO struct {
 	SaltFree          string `json:"saltFree"`
 	CalorieValue      string `json:"calorieValue"`
 }
+
+type CalorieList struct {
+	CalorieListId string    `json:"calorieListId"`
+	Products      []Product `json:"products"`
+	TotalCalorie  string    `json:"totalCalorie"`
+	CreateDate    string    `json:"createDate"`
+}

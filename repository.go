@@ -138,6 +138,18 @@ func (repository *Repository) CreateProduct(product models.Product) (*models.Pro
 	return repository.GetByProductId(product.ProductId)
 }
 
+func (repository *Repository) CreateCalorieList(calorieList models.CalorieList) (*models.CalorieList, error) {
+	collection := repository.client.Database("calorieLists").Collection("calorieList")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := collection.InsertOne(ctx, calorieList)
+	if err != nil {
+		return nil, err
+	}
+
+	return &calorieList, nil
+}
 func (repository *Repository) GetProducts(skip int, limit int) ([]models.Product, error) {
 	collection := repository.client.Database("product").Collection("products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
