@@ -159,3 +159,15 @@ func (a *Api) GetProducts(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 }
+
+func (a *Api) GetCalorieList(c *fiber.Ctx) error {
+	calorieInfoList, err := a.Service.GetKartelamDiskList()
+
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return err
+	}
+
+	c.JSON(calorieInfoList)
+	return nil
+}

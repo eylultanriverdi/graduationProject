@@ -118,3 +118,13 @@ func (service *Service) GetTotalProducts() (int, error) {
 
 	return total, nil
 }
+
+func (service *Service) GetKartelamDiskList() ([]models.CalorieList, error) {
+	calorieInfoList, err := service.Repository.GetKartelamDiskList()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return calorieInfoList, nil
+}

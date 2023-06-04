@@ -231,3 +231,31 @@ func (repository *Repository) GetTotalProducts() (int, error) {
 
 	return int(count), nil
 }
+
+func (repository *Repository) GetKartelamDiskList() ([]models.CalorieList, error) {
+	collection := repository.client.Database("calorieLists").Collection("calorieList")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var calorieInfoList []models.CalorieList
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var calorieInfo models.CalorieList
+		if err := cursor.Decode(&calorieInfo); err != nil {
+			return nil, err
+		}
+		calorieInfoList = append(calorieInfoList, calorieInfo)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return calorieInfoList, nil
+}
