@@ -76,6 +76,34 @@ func (api *Api) ProductHandler(c *fiber.Ctx) error {
 	}
 }
 
+func (api *Api) DietCategoryHandler(c *fiber.Ctx) error {
+	dietCategory := models.DietCategoryDTO{}
+	err := c.BodyParser(&dietCategory)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	}
+
+	// Create Product instance with byte array
+	createCategory, err := api.Service.GetDietCategory(models.DietCategoryDTO{
+		CategoryId:          dietCategory.CategoryId,
+		CategoryName:        dietCategory.CategoryName,
+		Description:         dietCategory.Description,
+		CategoryImage:       []byte(dietCategory.CategoryImage),
+		AllowedFoods:        dietCategory.AllowedFoods,
+		ForbiddenFoods:      dietCategory.ForbiddenFoods,
+		SampleDailyDietPlan: dietCategory.SampleDailyDietPlan,
+	})
+
+	switch err {
+	case nil:
+		return c.JSON(createCategory)
+	case UserAlreadyExistError, PasswordHashingError:
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	default:
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	}
+}
+
 func (api *Api) HandleAddListProduct(c *fiber.Ctx) error {
 	calorieList := models.CalorieList{}
 	err := c.BodyParser(&calorieList)

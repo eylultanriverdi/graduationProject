@@ -110,6 +110,18 @@ func ConvertProductEntityToProduct(productEntity models.ProductEntity) models.Pr
 	}
 }
 
+func ConvertDietCategoryEntityToCategory(dietCategoryEntity models.DietCategoryEntity) models.DietCategory {
+	return models.DietCategory{
+		CategoryId:          dietCategoryEntity.CategoryId,
+		CategoryName:        dietCategoryEntity.CategoryName,
+		Description:         dietCategoryEntity.Description,
+		CategoryImage:       dietCategoryEntity.CategoryImage,
+		AllowedFoods:        dietCategoryEntity.AllowedFoods,
+		ForbiddenFoods:      dietCategoryEntity.ForbiddenFoods,
+		SampleDailyDietPlan: dietCategoryEntity.SampleDailyDietPlan,
+	}
+}
+
 func (repository *Repository) CreateUser(user models.User) (*models.User, error) {
 	collection := repository.client.Database("user").Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -136,6 +148,20 @@ func (repository *Repository) CreateProduct(product models.Product) (*models.Pro
 	}
 
 	return repository.GetByProductId(product.ProductId)
+}
+
+func (repository *Repository) CreateDietCategory(dietCategory models.DietCategory) (*models.DietCategory, error) {
+	collection := repository.client.Database("categories").Collection("category")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.DietCategoryEntity(dietCategory)
+	_, err := collection.InsertOne(ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.GetByCategoryId(dietCategory.CategoryId)
 }
 
 func (repository *Repository) CreateCalorieList(calorieList models.CalorieList) (*models.CalorieList, error) {
@@ -217,6 +243,23 @@ func (repository *Repository) GetByProductId(productId string) (*models.Product,
 
 	product := ConvertProductEntityToProduct(entity)
 	return &product, nil
+}
+
+func (repository *Repository) GetByCategoryId(categoryId string) (*models.DietCategory, error) {
+	collection := repository.client.Database("categories").Collection("category")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.DietCategoryEntity{}
+
+	filter := bson.M{"categoryId": categoryId}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	dietCategory := ConvertDietCategoryEntityToCategory(entity)
+	return &dietCategory, nil
 }
 
 func (repository *Repository) GetTotalProducts() (int, error) {

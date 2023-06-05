@@ -78,3 +78,63 @@ type CalorieList struct {
 	TotalCalorie  string    `json:"totalCalorie"`
 	CreateDate    string    `json:"createDate"`
 }
+
+type DietCategoryEntity struct {
+	CategoryId          string           `bson:"categoryId"`
+	CategoryName        string           `bson:"categoryName"`
+	Description         string           `bson:"description"`
+	CategoryImage       []byte           `bson:"categoryImage"`
+	AllowedFoods        []AllowedFoods   `json:"allowedFoods"`
+	ForbiddenFoods      []ForbiddenFoods `json:"forbiddenFoods"`
+	SampleDailyDietPlan string           `json:"sampleDailyDietPlan"`
+}
+
+type DietCategoryDTO struct {
+	CategoryId          string           `json:"categoryId"`
+	CategoryName        string           `json:"categoryName"`
+	Description         string           `json:"description"`
+	CategoryImage       []byte           `json:"categoryImage"`
+	AllowedFoods        []AllowedFoods   `json:"allowedFoods"`
+	ForbiddenFoods      []ForbiddenFoods `json:"forbiddenFoods"`
+	SampleDailyDietPlan string           `json:"sampleDailyDietPlan"`
+}
+
+type DietCategory struct {
+	CategoryId          string           `json:"categoryId"`
+	CategoryName        string           `json:"categoryName"`
+	Description         string           `json:"description"`
+	CategoryImage       []byte           `json:"categoryImage"`
+	AllowedFoods        []AllowedFoods   `json:"allowedFoods"`
+	ForbiddenFoods      []ForbiddenFoods `json:"forbiddenFoods"`
+	SampleDailyDietPlan string           `json:"sampleDailyDietPlan"`
+}
+
+type AllowedFoods struct {
+	ProductId         string `json:"productId"`
+	ProductName       string `json:"productName"`
+	Description       string `json:"description"`
+	ProductImage      []byte `json:"productImage"`
+	ProteinValue      string `json:"proteinValue"`
+	CarbohydrateValue string `json:"carbohydrateValue"`
+	OilValue          string `json:"oilValue"`
+	GlutenValue       string `json:"glutenValue"`
+	KetogenicDiet     string `json:"ketogenicDiet"`
+	GlutenFree        string `json:"glutenFree"`
+	SaltFree          string `json:"saltFree"`
+	CalorieValue      string `json:"calorieValue"`
+}
+
+type ForbiddenFoods struct {
+	ProductId         string `json:"productId"`
+	ProductName       string `json:"productName"`
+	Description       string `json:"description"`
+	ProductImage      []byte `json:"productImage"`
+	ProteinValue      string `json:"proteinValue"`
+	CarbohydrateValue string `json:"carbohydrateValue"`
+	OilValue          string `json:"oilValue"`
+	GlutenValue       string `json:"glutenValue"`
+	KetogenicDiet     string `json:"ketogenicDiet"`
+	GlutenFree        string `json:"glutenFree"`
+	SaltFree          string `json:"saltFree"`
+	CalorieValue      string `json:"calorieValue"`
+}
