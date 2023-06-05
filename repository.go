@@ -275,7 +275,63 @@ func (repository *Repository) GetTotalProducts() (int, error) {
 	return int(count), nil
 }
 
-func (repository *Repository) GetKartelamDiskList() ([]models.CalorieList, error) {
+// func (repository *Repository) GetDietCategories() ([]models.DietCategory, error) {
+// 	collection := repository.client.Database("calorieLists").Collection("calorieList")
+// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 	defer cancel()
+
+// 	var dietCategories []models.DietCategory
+
+// 	cursor, err := collection.Find(ctx, bson.M{})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer cursor.Close(ctx)
+
+// 	for cursor.Next(ctx) {
+// 		var dietCategoriesInfo models.DietCategory
+// 		if err := cursor.Decode(&dietCategoriesInfo); err != nil {
+// 			return nil, err
+// 		}
+// 		dietCategories = append(dietCategories, dietCategoriesInfo)
+// 	}
+
+// 	if err := cursor.Err(); err != nil {
+// 		return nil, err
+// 	}
+
+// 	return dietCategories, nil
+// }
+
+func (repository *Repository) GetDietCategories() ([]models.DietCategory, error) {
+	collection := repository.client.Database("categories").Collection("category")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var dietCategory []models.DietCategory
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var dietCategories models.DietCategory
+		if err := cursor.Decode(&dietCategories); err != nil {
+			return nil, err
+		}
+		dietCategory = append(dietCategory, dietCategories)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return dietCategory, nil
+}
+
+func (repository *Repository) GetCalorieList() ([]models.CalorieList, error) {
 	collection := repository.client.Database("calorieLists").Collection("calorieList")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -84,9 +84,9 @@ type DietCategoryEntity struct {
 	CategoryName   string           `bson:"categoryName"`
 	Description    string           `bson:"description"`
 	CategoryImage  []byte           `bson:"categoryImage"`
-	AllowedFoods   []AllowedFoods   `json:"allowedFoods"`
-	ForbiddenFoods []ForbiddenFoods `json:"forbiddenFoods"`
-	DailyDietPlan  []DailyDietPlan  `json:"dailyDietPlan"`
+	AllowedFoods   []AllowedFoods   `bson:"allowedFoods"`
+	ForbiddenFoods []ForbiddenFoods `bson:"forbiddenFoods"`
+	DailyDietPlan  []DailyDietPlan  `bson:"dailyDietPlan"`
 }
 
 type DietCategoryDTO struct {

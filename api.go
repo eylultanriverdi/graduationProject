@@ -188,8 +188,20 @@ func (a *Api) GetProducts(c *fiber.Ctx) error {
 	}
 }
 
+func (a *Api) GetDietCategories(c *fiber.Ctx) error {
+	calorieInfoList, err := a.Service.GetDietCategories()
+
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return err
+	}
+
+	c.JSON(calorieInfoList)
+	return nil
+}
+
 func (a *Api) GetCalorieList(c *fiber.Ctx) error {
-	calorieInfoList, err := a.Service.GetKartelamDiskList()
+	calorieInfoList, err := a.Service.GetCalorieList()
 
 	if err != nil {
 		c.Status(fiber.StatusInternalServerError).SendString(err.Error())
