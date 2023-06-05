@@ -112,13 +112,13 @@ func ConvertProductEntityToProduct(productEntity models.ProductEntity) models.Pr
 
 func ConvertDietCategoryEntityToCategory(dietCategoryEntity models.DietCategoryEntity) models.DietCategory {
 	return models.DietCategory{
-		CategoryId:          dietCategoryEntity.CategoryId,
-		CategoryName:        dietCategoryEntity.CategoryName,
-		Description:         dietCategoryEntity.Description,
-		CategoryImage:       dietCategoryEntity.CategoryImage,
-		AllowedFoods:        dietCategoryEntity.AllowedFoods,
-		ForbiddenFoods:      dietCategoryEntity.ForbiddenFoods,
-		SampleDailyDietPlan: dietCategoryEntity.SampleDailyDietPlan,
+		CategoryId:     dietCategoryEntity.CategoryId,
+		CategoryName:   dietCategoryEntity.CategoryName,
+		Description:    dietCategoryEntity.Description,
+		CategoryImage:  dietCategoryEntity.CategoryImage,
+		AllowedFoods:   dietCategoryEntity.AllowedFoods,
+		ForbiddenFoods: dietCategoryEntity.ForbiddenFoods,
+		DailyDietPlan:  dietCategoryEntity.DailyDietPlan,
 	}
 }
 

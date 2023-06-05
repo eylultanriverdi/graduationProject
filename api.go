@@ -85,13 +85,13 @@ func (api *Api) DietCategoryHandler(c *fiber.Ctx) error {
 
 	// Create Product instance with byte array
 	createCategory, err := api.Service.GetDietCategory(models.DietCategoryDTO{
-		CategoryId:          dietCategory.CategoryId,
-		CategoryName:        dietCategory.CategoryName,
-		Description:         dietCategory.Description,
-		CategoryImage:       []byte(dietCategory.CategoryImage),
-		AllowedFoods:        dietCategory.AllowedFoods,
-		ForbiddenFoods:      dietCategory.ForbiddenFoods,
-		SampleDailyDietPlan: dietCategory.SampleDailyDietPlan,
+		CategoryId:     dietCategory.CategoryId,
+		CategoryName:   dietCategory.CategoryName,
+		Description:    dietCategory.Description,
+		CategoryImage:  []byte(dietCategory.CategoryImage),
+		AllowedFoods:   dietCategory.AllowedFoods,
+		ForbiddenFoods: dietCategory.ForbiddenFoods,
+		DailyDietPlan:  dietCategory.DailyDietPlan,
 	})
 
 	switch err {

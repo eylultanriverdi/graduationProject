@@ -80,33 +80,33 @@ type CalorieList struct {
 }
 
 type DietCategoryEntity struct {
-	CategoryId          string           `bson:"categoryId"`
-	CategoryName        string           `bson:"categoryName"`
-	Description         string           `bson:"description"`
-	CategoryImage       []byte           `bson:"categoryImage"`
-	AllowedFoods        []AllowedFoods   `json:"allowedFoods"`
-	ForbiddenFoods      []ForbiddenFoods `json:"forbiddenFoods"`
-	SampleDailyDietPlan string           `json:"sampleDailyDietPlan"`
+	CategoryId     string           `bson:"categoryId"`
+	CategoryName   string           `bson:"categoryName"`
+	Description    string           `bson:"description"`
+	CategoryImage  []byte           `bson:"categoryImage"`
+	AllowedFoods   []AllowedFoods   `json:"allowedFoods"`
+	ForbiddenFoods []ForbiddenFoods `json:"forbiddenFoods"`
+	DailyDietPlan  []DailyDietPlan  `json:"dailyDietPlan"`
 }
 
 type DietCategoryDTO struct {
-	CategoryId          string           `json:"categoryId"`
-	CategoryName        string           `json:"categoryName"`
-	Description         string           `json:"description"`
-	CategoryImage       []byte           `json:"categoryImage"`
-	AllowedFoods        []AllowedFoods   `json:"allowedFoods"`
-	ForbiddenFoods      []ForbiddenFoods `json:"forbiddenFoods"`
-	SampleDailyDietPlan string           `json:"sampleDailyDietPlan"`
+	CategoryId     string           `json:"categoryId"`
+	CategoryName   string           `json:"categoryName"`
+	Description    string           `json:"description"`
+	CategoryImage  []byte           `json:"categoryImage"`
+	AllowedFoods   []AllowedFoods   `json:"allowedFoods"`
+	ForbiddenFoods []ForbiddenFoods `json:"forbiddenFoods"`
+	DailyDietPlan  []DailyDietPlan  `json:"dailyDietPlan"`
 }
 
 type DietCategory struct {
-	CategoryId          string           `json:"categoryId"`
-	CategoryName        string           `json:"categoryName"`
-	Description         string           `json:"description"`
-	CategoryImage       []byte           `json:"categoryImage"`
-	AllowedFoods        []AllowedFoods   `json:"allowedFoods"`
-	ForbiddenFoods      []ForbiddenFoods `json:"forbiddenFoods"`
-	SampleDailyDietPlan string           `json:"sampleDailyDietPlan"`
+	CategoryId     string           `json:"categoryId"`
+	CategoryName   string           `json:"categoryName"`
+	Description    string           `json:"description"`
+	CategoryImage  []byte           `json:"categoryImage"`
+	AllowedFoods   []AllowedFoods   `json:"allowedFoods"`
+	ForbiddenFoods []ForbiddenFoods `json:"forbiddenFoods"`
+	DailyDietPlan  []DailyDietPlan  `json:"dailyDietPlan"`
 }
 
 type AllowedFoods struct {
@@ -137,4 +137,10 @@ type ForbiddenFoods struct {
 	GlutenFree        string `json:"glutenFree"`
 	SaltFree          string `json:"saltFree"`
 	CalorieValue      string `json:"calorieValue"`
+}
+
+type DailyDietPlan struct {
+	PlanId         string `json:"planId"`
+	AgeRange       string `json:"ageRange"`
+	ProgramDetails string `json:"programDetails"`
 }

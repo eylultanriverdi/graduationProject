@@ -89,13 +89,13 @@ func (service *Service) GetProduct(product models.ProductCategoryDTO) (*models.P
 
 func (service *Service) GetDietCategory(dietCategory models.DietCategoryDTO) (*models.DietCategory, error) {
 	dietCategoryCreate := models.DietCategory{
-		CategoryId:          GenerateUUID(8),
-		CategoryName:        dietCategory.CategoryName,
-		Description:         dietCategory.Description,
-		CategoryImage:       []byte(dietCategory.CategoryImage),
-		AllowedFoods:        dietCategory.AllowedFoods,
-		ForbiddenFoods:      dietCategory.ForbiddenFoods,
-		SampleDailyDietPlan: dietCategory.SampleDailyDietPlan,
+		CategoryId:     GenerateUUID(8),
+		CategoryName:   dietCategory.CategoryName,
+		Description:    dietCategory.Description,
+		CategoryImage:  []byte(dietCategory.CategoryImage),
+		AllowedFoods:   dietCategory.AllowedFoods,
+		ForbiddenFoods: dietCategory.ForbiddenFoods,
+		DailyDietPlan:  dietCategory.DailyDietPlan,
 	}
 
 	createProduct, err := service.Repository.CreateDietCategory(dietCategoryCreate)
