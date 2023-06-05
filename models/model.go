@@ -140,7 +140,15 @@ type ForbiddenFoods struct {
 }
 
 type DailyDietPlan struct {
-	PlanId         string `json:"planId"`
-	AgeRange       string `json:"ageRange"`
-	ProgramDetails string `json:"programDetails"`
+	PlanId         string           `json:"planId"`
+	AgeRange       string           `json:"ageRange"`
+	ProgramDetails []ProgramDetails `json:"programDetails"`
+}
+
+type ProgramDetails struct {
+	Breakfast     string `json:"breakfast"`
+	Lunch         string `json:"lunch"`
+	Dinner        string `json:"dinner"`
+	Snack         string `json:"snack"`
+	AmountofWater string `json:"amountofWater"`
 }
