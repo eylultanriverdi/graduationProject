@@ -3,6 +3,7 @@ module example.com/greetings
 go 1.16
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gofiber/fiber v1.14.6
 	github.com/gofiber/fiber/v2 v2.43.0
 	github.com/golang/snappy v0.0.3 // indirect

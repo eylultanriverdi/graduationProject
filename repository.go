@@ -65,23 +65,6 @@ func GetCleanTestRepository() *Repository {
 	return repository
 }
 
-func (repository *Repository) GetByEmail(email string) (*models.User, error) {
-	collection := repository.client.Database("user").Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	entity := models.UserEntity{}
-
-	filter := bson.M{"email": email}
-	err := collection.FindOne(ctx, filter).Decode(&entity)
-	if err != nil {
-		return nil, err
-	}
-
-	user := ConvertUserEntityToUser(entity)
-	return &user, nil
-}
-
 func ConvertUserEntityToUser(userEntity models.UserEntity) models.User {
 	return models.User{
 		ID:       userEntity.ID,
@@ -92,7 +75,6 @@ func ConvertUserEntityToUser(userEntity models.UserEntity) models.User {
 		Password: userEntity.Password,
 	}
 }
-
 func ConvertProductEntityToProduct(productEntity models.ProductEntity) models.Product {
 	return models.Product{
 		ProductId:         productEntity.ProductId,
@@ -275,34 +257,6 @@ func (repository *Repository) GetTotalProducts() (int, error) {
 	return int(count), nil
 }
 
-// func (repository *Repository) GetDietCategories() ([]models.DietCategory, error) {
-// 	collection := repository.client.Database("calorieLists").Collection("calorieList")
-// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-// 	defer cancel()
-
-// 	var dietCategories []models.DietCategory
-
-// 	cursor, err := collection.Find(ctx, bson.M{})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer cursor.Close(ctx)
-
-// 	for cursor.Next(ctx) {
-// 		var dietCategoriesInfo models.DietCategory
-// 		if err := cursor.Decode(&dietCategoriesInfo); err != nil {
-// 			return nil, err
-// 		}
-// 		dietCategories = append(dietCategories, dietCategoriesInfo)
-// 	}
-
-// 	if err := cursor.Err(); err != nil {
-// 		return nil, err
-// 	}
-
-// 	return dietCategories, nil
-// }
-
 func (repository *Repository) GetDietCategories() ([]models.DietCategory, error) {
 	collection := repository.client.Database("categories").Collection("category")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -357,4 +311,49 @@ func (repository *Repository) GetCalorieList() ([]models.CalorieList, error) {
 	}
 
 	return calorieInfoList, nil
+}
+
+func (repository *Repository) GetByEmail(email string) (*models.User, error) {
+	collection := repository.client.Database("user").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.UserEntity{}
+
+	filter := bson.M{"email": email}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	user := ConvertUserEntityToUser(entity)
+	return &user, nil
+}
+
+func (repository *Repository) GetByID(userID string) (*models.User, error) {
+	collection := repository.client.Database("user").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": userID}
+
+	entity := models.UserEntity{}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, mongo.ErrNoDocuments
+		}
+		return nil, err
+	}
+
+	user := models.User{
+		ID:       entity.ID,
+		Name:     entity.Name,
+		Surname:  entity.Surname,
+		Email:    entity.Email,
+		Tel:      entity.Tel,
+		Password: entity.Password,
+	}
+
+	return &user, nil
 }

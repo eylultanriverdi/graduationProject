@@ -6,6 +6,7 @@ import (
 
 	"example.com/greetings/models"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Service struct {
@@ -37,7 +38,6 @@ func GenerateUUID(length int) string {
 }
 
 func (service *Service) Register(register models.RegisterDTO) (*models.User, error) {
-
 	userCreate := models.User{
 		ID:       GenerateUUID(8),
 		Name:     register.Name,
@@ -48,13 +48,11 @@ func (service *Service) Register(register models.RegisterDTO) (*models.User, err
 	}
 
 	_, err := service.Repository.GetByEmail(register.Email)
-
-	if err != nil {
-		return nil, err
+	if err == nil {
+		return nil, UserAlreadyExistError
 	}
 
 	createUser, err := service.Repository.CreateUser(userCreate)
-
 	if err != nil {
 		return nil, err
 	}
@@ -157,4 +155,26 @@ func (service *Service) GetCalorieList() ([]models.CalorieList, error) {
 	}
 
 	return calorieInfoList, nil
+}
+
+var UserNotFoundError error = errors.New("User not found")
+var InvalidPasswordError error = errors.New("Invalid password")
+
+func (service *Service) Signin(signin models.SigninDTO) (*models.User, error) {
+	user, err := service.Repository.GetByEmail(signin.Email)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, models.UserNotFoundError
+		}
+		return nil, err
+	}
+
+	if user.Password != signin.Password {
+		return nil, models.InvalidPasswordError
+	}
+
+	return user, nil
+}
+func (service *Service) GetProfile(userID string) (*models.User, error) {
+	return service.Repository.GetByID(userID)
 }

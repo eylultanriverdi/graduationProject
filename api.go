@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"example.com/greetings/models"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Api struct {
@@ -26,16 +28,18 @@ func (api *Api) RegisterHandler(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
-	createUser, err := api.Service.Register(register)
 
-	switch err {
-	case nil:
-		return c.JSON(createUser)
-	case UserAlreadyExistError, PasswordHashingError:
-		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
-	default:
-		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	createUser, err := api.Service.Register(register)
+	if err != nil {
+		switch err {
+		case UserAlreadyExistError, PasswordHashingError:
+			return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		default:
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
 	}
+
+	return c.JSON(createUser)
 }
 
 func (api *Api) ProductHandler(c *fiber.Ctx) error {
@@ -76,6 +80,74 @@ func (api *Api) ProductHandler(c *fiber.Ctx) error {
 	}
 }
 
+func (api *Api) SigninHandler(c *fiber.Ctx) error {
+	signin := models.SigninDTO{}
+	err := c.BodyParser(&signin)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	}
+
+	// Kullanıcının kimlik doğrulaması gerçekleştiriliyor
+	user, err := api.Service.Signin(signin)
+	if err != nil {
+		if err == models.UserNotFoundError {
+			return c.Status(fiber.StatusUnauthorized).SendString("User not found")
+		} else if err == models.InvalidPasswordError {
+			return c.Status(fiber.StatusUnauthorized).SendString("Invalid password")
+		} else {
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
+	}
+
+	// Token oluşturuluyor
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["userID"] = user.ID
+
+	// Token imzalanıyor
+	tokenString, err := token.SignedString([]byte("gizliAnahtar"))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	}
+
+	// Token yanıt olarak döndürülüyor
+	return c.JSON(fiber.Map{
+		"token": tokenString,
+	})
+}
+
+func (api *Api) ProfileHandler(c *fiber.Ctx) error {
+	tokenString := c.Get("Authorization") // Tokenı isteğin başlığından alınabilir
+
+	// Token doğrulanıyor
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte("xL#j9E7o!P1k@9qR3tZw5y"), nil
+	})
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
+	userID, ok := claims["userID"].(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
+	// Profil bilgileri alınıyor
+	user, err := api.Service.GetProfile(userID)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return c.Status(fiber.StatusNotFound).SendString("User not found")
+		}
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	}
+
+	return c.JSON(user)
+}
 func (api *Api) DietCategoryHandler(c *fiber.Ctx) error {
 	dietCategory := models.DietCategoryDTO{}
 	err := c.BodyParser(&dietCategory)

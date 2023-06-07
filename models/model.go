@@ -1,12 +1,21 @@
 package models
 
+import "errors"
+
+var (
+	UserNotFoundError     = errors.New("User not found")
+	InvalidPasswordError  = errors.New("Invalid password")
+	UserAlreadyExistError = errors.New("User already exists")
+	PasswordHashingError  = errors.New("Error occurred during password hashing")
+)
+
 type RegisterDTO struct {
-	Email    string `json:"email"`
+	ID       string `json:"uid"`
 	Name     string `json:"name"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
 	Surname  string `json:"surname"`
+	Email    string `json:"email"`
 	Tel      string `json:"tel"`
+	Password string `json:"password"`
 }
 
 type User struct {
@@ -15,7 +24,7 @@ type User struct {
 	Surname  string `json:"surname"`
 	Email    string `json:"email"`
 	Tel      string `json:"tel"`
-	Password string `json:"-"`
+	Password string `json:"password"`
 }
 
 type UserEntity struct {
@@ -151,4 +160,9 @@ type ProgramDetails struct {
 	Dinner        string `json:"dinner"`
 	Snack         string `json:"snack"`
 	AmountofWater string `json:"amountofWater"`
+}
+
+type SigninDTO struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

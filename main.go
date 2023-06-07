@@ -23,6 +23,8 @@ func SetupApp(api *Api) *fiber.App {
 
 	app.Post("/register", api.RegisterHandler)
 	app.Post("/product", api.ProductHandler)
+	app.Post("/signin", api.SigninHandler)
+	app.Get("/profile", api.ProfileHandler)
 	app.Post("/dietCategory", api.DietCategoryHandler)
 	app.Post("/addList", api.HandleAddListProduct)
 	app.Get("/products", api.GetProducts)
