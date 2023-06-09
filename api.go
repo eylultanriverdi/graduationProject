@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/base64"
+	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	"example.com/greetings/models"
@@ -117,18 +119,23 @@ func (api *Api) SigninHandler(c *fiber.Ctx) error {
 }
 
 func (api *Api) ProfileHandler(c *fiber.Ctx) error {
-	tokenString := c.Get("Authorization") // Tokenı isteğin başlığından alınabilir
+	tokenString := strings.TrimSpace(strings.TrimPrefix(c.Get("Authorization"), "Bearer "))
+
+	// Tokenı isteğin başlığından alınabilir
 
 	// Token doğrulanıyor
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte("xL#j9E7o!P1k@9qR3tZw5y"), nil
 	})
-	if err != nil {
+
+	fmt.Println(token, "token")
+
+	if err != nil || !token.Valid {
 		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
+	if !ok {
 		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
 	}
 
@@ -148,6 +155,7 @@ func (api *Api) ProfileHandler(c *fiber.Ctx) error {
 
 	return c.JSON(user)
 }
+
 func (api *Api) DietCategoryHandler(c *fiber.Ctx) error {
 	dietCategory := models.DietCategoryDTO{}
 	err := c.BodyParser(&dietCategory)
