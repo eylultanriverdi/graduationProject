@@ -10,30 +10,93 @@ var (
 )
 
 type RegisterDTO struct {
-	ID       string `json:"uid"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-	Email    string `json:"email"`
-	Tel      string `json:"tel"`
-	Password string `json:"password"`
+	ID                  string `json:"uid"`
+	Name                string `json:"name"`
+	Surname             string `json:"surname"`
+	Email               string `json:"email"`
+	Tel                 string `json:"tel"`
+	Password            string `json:"password"`
+	Age                 string `json:"age"`
+	Kilo                string `json:"kilo"`
+	Height              string `json:"height"`
+	AmountofWater       string `json:"amountOfWater"`
+	DailyMovementAmount string `json:"dailyMovementAmount"`
+	DesiredWeight       string `json:"desiredWeight"`
+	DesiredDestination  string `json:"desiredDestination"`
+}
+
+type NutritionistRegisterDTO struct {
+	ID          string `json:"uid"`
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	Email       string `json:"email"`
+	Tel         string `json:"tel"`
+	Password    string `json:"password"`
+	Age         string `json:"age"`
+	Uni         string `json:"uni"`
+	Experience  string `json:"experience"`
+	Profession  string `json:"profession"`
+	Explanation string `json:"explanation"`
+}
+
+type Nutritionist struct {
+	ID          string `json:"uid"`
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	Email       string `json:"email"`
+	Tel         string `json:"tel"`
+	Password    string `json:"password"`
+	Age         string `json:"age"`
+	Uni         string `json:"uni"`
+	Experience  string `json:"experience"`
+	Profession  string `json:"profession"`
+	Explanation string `json:"explanation"`
+}
+
+type NutritionistEntity struct {
+	ID          string `bson:"uid"`
+	Name        string `bson:"name"`
+	Surname     string `bson:"surname"`
+	Email       string `bson:"email"`
+	Tel         string `bson:"tel"`
+	Password    string `bson:"password"`
+	Age         string `bson:"age"`
+	Uni         string `bson:"uni"`
+	Experience  string `bson:"experience"`
+	Profession  string `bson:"profession"`
+	Explanation string `bson:"explanation"`
 }
 
 type User struct {
-	ID       string `json:"uid"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-	Email    string `json:"email"`
-	Tel      string `json:"tel"`
-	Password string `json:"password"`
+	ID                  string `json:"uid"`
+	Name                string `json:"name"`
+	Surname             string `json:"surname"`
+	Email               string `json:"email"`
+	Tel                 string `json:"tel"`
+	Password            string `json:"password"`
+	Age                 string `json:"age"`
+	Kilo                string `json:"kilo"`
+	Height              string `json:"height"`
+	AmountofWater       string `json:"amountOfWater"`
+	DailyMovementAmount string `json:"dailyMovementAmount"`
+	DesiredWeight       string `json:"desiredWeight"`
+	DesiredDestination  string `json:"desiredDestination"`
 }
 
 type UserEntity struct {
-	ID       string `bson:"uid"`
-	Name     string `bson:"name"`
-	Surname  string `bson:"surname"`
-	Email    string `bson:"email"`
-	Tel      string `bson:"tel"`
-	Password string `bson:"password"`
+	ID                  string `bson:"uid"`
+	Name                string `bson:"name"`
+	Surname             string `bson:"surname"`
+	Email               string `bson:"email"`
+	Tel                 string `bson:"tel"`
+	Password            string `bson:"password"`
+	Age                 string `bson:"age"`
+	Kilo                string `bson:"kilo"`
+	Height              string `bson:"height"`
+	AmountofWater       string `bson:"amountOfWater"`
+	DailyMovementAmount string `bson:"dailyMovementAmount"`
+	DesiredWeight       string `bson:"desiredWeight"`
+	DesiredDestination  string `bson:"desiredDestination"`
 }
 
 type Product struct {
@@ -163,6 +226,11 @@ type ProgramDetails struct {
 }
 
 type SigninDTO struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type SigninNutritionistDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }

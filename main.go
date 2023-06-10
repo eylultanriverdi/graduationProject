@@ -21,10 +21,13 @@ func SetupApp(api *Api) *fiber.App {
 		AllowCredentials: true,
 	}))
 
-	app.Post("/register", api.RegisterHandler)
+	app.Post("/userRegister", api.RegisterHandler)
+	app.Post("/nutritionistRegister", api.NutritionistRegisterHandler)
 	app.Post("/product", api.ProductHandler)
 	app.Post("/signin", api.SigninHandler)
+	app.Post("/signinNutritionist", api.SigninNutritionistHandler)
 	app.Get("/profile", api.ProfileHandler)
+	app.Get("/profileNutritionist", api.ProfileNutritionistHandler)
 	app.Post("/dietCategory", api.DietCategoryHandler)
 	app.Post("/addList", api.HandleAddListProduct)
 	app.Get("/products", api.GetProducts)

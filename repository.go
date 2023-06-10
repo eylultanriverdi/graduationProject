@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -67,14 +68,38 @@ func GetCleanTestRepository() *Repository {
 
 func ConvertUserEntityToUser(userEntity models.UserEntity) models.User {
 	return models.User{
-		ID:       userEntity.ID,
-		Name:     userEntity.Name,
-		Surname:  userEntity.Surname,
-		Email:    userEntity.Email,
-		Tel:      userEntity.Tel,
-		Password: userEntity.Password,
+		ID:                  userEntity.ID,
+		Name:                userEntity.Name,
+		Surname:             userEntity.Surname,
+		Email:               userEntity.Email,
+		Tel:                 userEntity.Tel,
+		Password:            userEntity.Password,
+		Age:                 userEntity.Age,
+		Kilo:                userEntity.Kilo,
+		Height:              userEntity.Height,
+		AmountofWater:       userEntity.AmountofWater,
+		DailyMovementAmount: userEntity.DailyMovementAmount,
+		DesiredWeight:       userEntity.DesiredWeight,
+		DesiredDestination:  userEntity.DesiredDestination,
 	}
 }
+
+func ConvertNutritionistEntityToNutritionist(nutritionistEntity models.NutritionistEntity) models.Nutritionist {
+	return models.Nutritionist{
+		ID:          nutritionistEntity.ID,
+		Name:        nutritionistEntity.Name,
+		Surname:     nutritionistEntity.Surname,
+		Email:       nutritionistEntity.Email,
+		Tel:         nutritionistEntity.Tel,
+		Password:    nutritionistEntity.Password,
+		Age:         nutritionistEntity.Age,
+		Uni:         nutritionistEntity.Uni,
+		Experience:  nutritionistEntity.Experience,
+		Profession:  nutritionistEntity.Profession,
+		Explanation: nutritionistEntity.Explanation,
+	}
+}
+
 func ConvertProductEntityToProduct(productEntity models.ProductEntity) models.Product {
 	return models.Product{
 		ProductId:         productEntity.ProductId,
@@ -116,6 +141,20 @@ func (repository *Repository) CreateUser(user models.User) (*models.User, error)
 	}
 
 	return repository.GetByUserId(user.ID)
+}
+
+func (repository *Repository) CreateNutritionist(nutritionist models.Nutritionist) (*models.Nutritionist, error) {
+	collection := repository.client.Database("nutritionists").Collection("nutritionist")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.NutritionistEntity(nutritionist)
+	_, err := collection.InsertOne(ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.GetByNutritionistId(nutritionist.ID)
 }
 
 func (repository *Repository) CreateProduct(product models.Product) (*models.Product, error) {
@@ -208,6 +247,23 @@ func (repository *Repository) GetByUserId(userId string) (*models.User, error) {
 
 	user := ConvertUserEntityToUser(entity)
 	return &user, nil
+}
+
+func (repository *Repository) GetByNutritionistId(nutritionistId string) (*models.Nutritionist, error) {
+	collection := repository.client.Database("nutritionists").Collection("nutritionist")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.NutritionistEntity{}
+
+	filter := bson.M{"uid": nutritionistId}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	nutritionist := ConvertNutritionistEntityToNutritionist(entity)
+	return &nutritionist, nil
 }
 
 func (repository *Repository) GetByProductId(productId string) (*models.Product, error) {
@@ -327,7 +383,28 @@ func (repository *Repository) GetByEmail(email string) (*models.User, error) {
 	}
 
 	user := ConvertUserEntityToUser(entity)
+
+	fmt.Println(user, "user")
 	return &user, nil
+}
+
+func (repository *Repository) GetByEmailNutritionist(email string) (*models.Nutritionist, error) {
+	collection := repository.client.Database("nutritionists").Collection("nutritionist")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.NutritionistEntity{}
+
+	filter := bson.M{"email": email}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	nutritionist := ConvertNutritionistEntityToNutritionist(entity)
+
+	fmt.Println(nutritionist, "nutritionist")
+	return &nutritionist, nil
 }
 
 func (repository *Repository) GetByID(userID string) (*models.User, error) {

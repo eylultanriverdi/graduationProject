@@ -39,12 +39,19 @@ func GenerateUUID(length int) string {
 
 func (service *Service) Register(register models.RegisterDTO) (*models.User, error) {
 	userCreate := models.User{
-		ID:       GenerateUUID(8),
-		Name:     register.Name,
-		Surname:  register.Surname,
-		Email:    register.Email,
-		Tel:      register.Tel,
-		Password: register.Password,
+		ID:                  GenerateUUID(8),
+		Name:                register.Name,
+		Surname:             register.Surname,
+		Email:               register.Email,
+		Tel:                 register.Tel,
+		Password:            register.Password,
+		Age:                 register.Age,
+		Kilo:                register.Kilo,
+		Height:              register.Height,
+		AmountofWater:       register.AmountofWater,
+		DailyMovementAmount: register.DailyMovementAmount,
+		DesiredWeight:       register.DesiredWeight,
+		DesiredDestination:  register.DesiredDestination,
 	}
 
 	_, err := service.Repository.GetByEmail(register.Email)
@@ -58,6 +65,34 @@ func (service *Service) Register(register models.RegisterDTO) (*models.User, err
 	}
 
 	return createUser, nil
+}
+
+func (service *Service) NutritionistRegister(registerNutritionist models.NutritionistRegisterDTO) (*models.Nutritionist, error) {
+	nutritionistCreate := models.Nutritionist{
+		ID:          GenerateUUID(8),
+		Name:        registerNutritionist.Name,
+		Surname:     registerNutritionist.Surname,
+		Email:       registerNutritionist.Email,
+		Tel:         registerNutritionist.Tel,
+		Password:    registerNutritionist.Password,
+		Age:         registerNutritionist.Age,
+		Uni:         registerNutritionist.Uni,
+		Experience:  registerNutritionist.Experience,
+		Profession:  registerNutritionist.Profession,
+		Explanation: registerNutritionist.Explanation,
+	}
+
+	_, err := service.Repository.GetByEmail(registerNutritionist.Email)
+	if err == nil {
+		return nil, UserAlreadyExistError
+	}
+
+	createNutritionist, err := service.Repository.CreateNutritionist(nutritionistCreate)
+	if err != nil {
+		return nil, err
+	}
+
+	return createNutritionist, nil
 }
 
 func (service *Service) GetProduct(product models.ProductCategoryDTO) (*models.Product, error) {
@@ -175,6 +210,27 @@ func (service *Service) Signin(signin models.SigninDTO) (*models.User, error) {
 
 	return user, nil
 }
+
+func (service *Service) SigninNutritionist(signin models.SigninNutritionistDTO) (*models.Nutritionist, error) {
+	nutritionist, err := service.Repository.GetByEmailNutritionist(signin.Email)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, models.UserNotFoundError
+		}
+		return nil, err
+	}
+
+	if nutritionist.Password != signin.Password {
+		return nil, models.InvalidPasswordError
+	}
+
+	return nutritionist, nil
+}
+
 func (service *Service) GetProfile(userID string) (*models.User, error) {
 	return service.Repository.GetByID(userID)
+}
+
+func (service *Service) GetNutritionistProfile(nutritionistID string) (*models.Nutritionist, error) {
+	return service.Repository.GetByNutritionistId(nutritionistID)
 }

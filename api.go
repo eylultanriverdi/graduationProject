@@ -32,6 +32,7 @@ func (api *Api) RegisterHandler(c *fiber.Ctx) error {
 	}
 
 	createUser, err := api.Service.Register(register)
+	fmt.Println(createUser, "createUser")
 	if err != nil {
 		switch err {
 		case UserAlreadyExistError, PasswordHashingError:
@@ -42,6 +43,26 @@ func (api *Api) RegisterHandler(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(createUser)
+}
+
+func (api *Api) NutritionistRegisterHandler(c *fiber.Ctx) error {
+	nutritionistRegister := models.NutritionistRegisterDTO{}
+	err := c.BodyParser(&nutritionistRegister)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	}
+
+	createNutritionist, err := api.Service.NutritionistRegister(nutritionistRegister)
+	if err != nil {
+		switch err {
+		case UserAlreadyExistError, PasswordHashingError:
+			return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		default:
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
+	}
+
+	return c.JSON(createNutritionist)
 }
 
 func (api *Api) ProductHandler(c *fiber.Ctx) error {
@@ -107,7 +128,43 @@ func (api *Api) SigninHandler(c *fiber.Ctx) error {
 	claims["userID"] = user.ID
 
 	// Token imzalanıyor
-	tokenString, err := token.SignedString([]byte("gizliAnahtar"))
+	tokenString, err := token.SignedString([]byte("xL#j9E7o!P1k@9qR3tZw5y"))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	}
+
+	// Token yanıt olarak döndürülüyor
+	return c.JSON(fiber.Map{
+		"token": tokenString,
+	})
+}
+
+func (api *Api) SigninNutritionistHandler(c *fiber.Ctx) error {
+	signin := models.SigninNutritionistDTO{}
+	err := c.BodyParser(&signin)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	}
+
+	// Kullanıcının kimlik doğrulaması gerçekleştiriliyor
+	nutritionist, err := api.Service.SigninNutritionist(signin)
+	if err != nil {
+		if err == models.UserNotFoundError {
+			return c.Status(fiber.StatusUnauthorized).SendString("User not found")
+		} else if err == models.InvalidPasswordError {
+			return c.Status(fiber.StatusUnauthorized).SendString("Invalid password")
+		} else {
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
+	}
+
+	// Token oluşturuluyor
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["userID"] = nutritionist.ID
+
+	// Token imzalanıyor
+	tokenString, err := token.SignedString([]byte("xL#j9E7o!P1k@9qR3tZw5y"))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
@@ -154,6 +211,44 @@ func (api *Api) ProfileHandler(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(user)
+}
+
+func (api *Api) ProfileNutritionistHandler(c *fiber.Ctx) error {
+	tokenString := strings.TrimSpace(strings.TrimPrefix(c.Get("Authorization"), "Bearer "))
+
+	// Tokenı isteğin başlığından alınabilir
+
+	// Token doğrulanıyor
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte("xL#j9E7o!P1k@9qR3tZw5y"), nil
+	})
+
+	fmt.Println(token, "token")
+
+	if err != nil || !token.Valid {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
+	nutritionistId, ok := claims["nutritionistID"].(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
+	// Profil bilgileri alınıyor
+	nutritionist, err := api.Service.GetNutritionistProfile(nutritionistId)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return c.Status(fiber.StatusNotFound).SendString("Nutritionist not found")
+		}
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	}
+
+	return c.JSON(nutritionist)
 }
 
 func (api *Api) DietCategoryHandler(c *fiber.Ctx) error {
