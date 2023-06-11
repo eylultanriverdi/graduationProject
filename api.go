@@ -319,7 +319,7 @@ func (api *Api) HandleAddListProduct(c *fiber.Ctx) error {
 
 func (a *Api) GetProducts(c *fiber.Ctx) error {
 	page := c.Query("page", "1")
-	limit := c.Query("limit", "12") // Varsayılan olarak 10 ürün gösterilecek
+	limit := c.Query("limit", "10") // Varsayılan olarak 10 ürün gösterilecek
 
 	// page ve limit değerlerini integer'a dönüştürme işlemlerini yapabilirsiniz
 	pageNum, err := strconv.Atoi(page)

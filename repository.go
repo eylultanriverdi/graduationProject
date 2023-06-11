@@ -424,12 +424,19 @@ func (repository *Repository) GetByID(userID string) (*models.User, error) {
 	}
 
 	user := models.User{
-		ID:       entity.ID,
-		Name:     entity.Name,
-		Surname:  entity.Surname,
-		Email:    entity.Email,
-		Tel:      entity.Tel,
-		Password: entity.Password,
+		ID:                  entity.ID,
+		Name:                entity.Name,
+		Surname:             entity.Surname,
+		Email:               entity.Email,
+		Tel:                 entity.Tel,
+		Password:            entity.Password,
+		Age:                 entity.Age,
+		Kilo:                entity.Kilo,
+		Height:              entity.Height,
+		AmountofWater:       entity.AmountofWater,
+		DailyMovementAmount: entity.DailyMovementAmount,
+		DesiredWeight:       entity.DesiredWeight,
+		DesiredDestination:  entity.DesiredDestination,
 	}
 
 	return &user, nil
