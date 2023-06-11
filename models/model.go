@@ -154,6 +154,7 @@ type CalorieList struct {
 type DietCategoryEntity struct {
 	CategoryId     string           `bson:"categoryId"`
 	CategoryName   string           `bson:"categoryName"`
+	DietitianName  string           `bson:"dietitianName"`
 	Description    string           `bson:"description"`
 	CategoryImage  []byte           `bson:"categoryImage"`
 	AllowedFoods   []AllowedFoods   `bson:"allowedFoods"`
@@ -164,6 +165,7 @@ type DietCategoryEntity struct {
 type DietCategoryDTO struct {
 	CategoryId     string           `json:"categoryId"`
 	CategoryName   string           `json:"categoryName"`
+	DietitianName  string           `json:"dietitianName"`
 	Description    string           `json:"description"`
 	CategoryImage  []byte           `json:"categoryImage"`
 	AllowedFoods   []AllowedFoods   `json:"allowedFoods"`
@@ -174,6 +176,7 @@ type DietCategoryDTO struct {
 type DietCategory struct {
 	CategoryId     string           `json:"categoryId"`
 	CategoryName   string           `json:"categoryName"`
+	DietitianName  string           `json:"dietitianName"`
 	Description    string           `json:"description"`
 	CategoryImage  []byte           `json:"categoryImage"`
 	AllowedFoods   []AllowedFoods   `json:"allowedFoods"`

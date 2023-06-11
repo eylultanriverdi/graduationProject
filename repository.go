@@ -121,6 +121,7 @@ func ConvertDietCategoryEntityToCategory(dietCategoryEntity models.DietCategoryE
 	return models.DietCategory{
 		CategoryId:     dietCategoryEntity.CategoryId,
 		CategoryName:   dietCategoryEntity.CategoryName,
+		DietitianName:  dietCategoryEntity.DietitianName,
 		Description:    dietCategoryEntity.Description,
 		CategoryImage:  dietCategoryEntity.CategoryImage,
 		AllowedFoods:   dietCategoryEntity.AllowedFoods,

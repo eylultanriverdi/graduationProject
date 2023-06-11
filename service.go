@@ -124,6 +124,7 @@ func (service *Service) GetDietCategory(dietCategory models.DietCategoryDTO) (*m
 	dietCategoryCreate := models.DietCategory{
 		CategoryId:     GenerateUUID(8),
 		CategoryName:   dietCategory.CategoryName,
+		DietitianName:  dietCategory.DietitianName,
 		Description:    dietCategory.Description,
 		CategoryImage:  []byte(dietCategory.CategoryImage),
 		AllowedFoods:   dietCategory.AllowedFoods,
