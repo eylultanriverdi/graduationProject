@@ -183,6 +183,16 @@ func (service *Service) GetDietCategories() ([]models.DietCategory, error) {
 	return dietCategories, nil
 }
 
+func (service *Service) GetNutritionists() ([]models.Nutritionist, error) {
+	nutritionists, err := service.Repository.GetNutritionists()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nutritionists, nil
+}
+
 func (service *Service) GetCalorieList() ([]models.CalorieList, error) {
 	calorieInfoList, err := service.Repository.GetCalorieList()
 

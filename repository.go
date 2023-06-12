@@ -342,6 +342,34 @@ func (repository *Repository) GetDietCategories() ([]models.DietCategory, error)
 	return dietCategory, nil
 }
 
+func (repository *Repository) GetNutritionists() ([]models.Nutritionist, error) {
+	collection := repository.client.Database("nutritionists").Collection("nutritionist")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var nutritionists []models.Nutritionist
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var nutritionistsList models.Nutritionist
+		if err := cursor.Decode(&nutritionistsList); err != nil {
+			return nil, err
+		}
+		nutritionists = append(nutritionists, nutritionistsList)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return nutritionists, nil
+}
+
 func (repository *Repository) GetCalorieList() ([]models.CalorieList, error) {
 	collection := repository.client.Database("calorieLists").Collection("calorieList")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
