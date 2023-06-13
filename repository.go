@@ -84,6 +84,13 @@ func ConvertUserEntityToUser(userEntity models.UserEntity) models.User {
 	}
 }
 
+func ConvertRecipeEntityToNutritionist(recipeEntity models.RecipeEntity) models.Recipe {
+	return models.Recipe{
+		RecipeID:     recipeEntity.RecipeID,
+		RecipeDetail: recipeEntity.RecipeDetail,
+	}
+}
+
 func ConvertNutritionistEntityToNutritionist(nutritionistEntity models.NutritionistEntity) models.Nutritionist {
 	return models.Nutritionist{
 		ID:          nutritionistEntity.ID,
@@ -142,6 +149,20 @@ func (repository *Repository) CreateUser(user models.User) (*models.User, error)
 	}
 
 	return repository.GetByUserId(user.ID)
+}
+
+func (repository *Repository) AddRecipe(recipe models.Recipe) (*models.Recipe, error) {
+	collection := repository.client.Database("recipes").Collection("recipe")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.RecipeEntity(recipe)
+	_, err := collection.InsertOne(ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.GetByRecipeId(recipe.RecipeID)
 }
 
 func (repository *Repository) CreateNutritionist(nutritionist models.Nutritionist) (*models.Nutritionist, error) {
@@ -261,6 +282,23 @@ func (repository *Repository) GetByUserId(userId string) (*models.User, error) {
 
 	user := ConvertUserEntityToUser(entity)
 	return &user, nil
+}
+
+func (repository *Repository) GetByRecipeId(recipeID string) (*models.Recipe, error) {
+	collection := repository.client.Database("recipes").Collection("recipe")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	entity := models.RecipeEntity{}
+
+	filter := bson.M{"recipeID": recipeID}
+	err := collection.FindOne(ctx, filter).Decode(&entity)
+	if err != nil {
+		return nil, err
+	}
+
+	recipe := ConvertRecipeEntityToNutritionist(entity)
+	return &recipe, nil
 }
 
 func (repository *Repository) GetByNutritionistId(nutritionistId string) (*models.Nutritionist, error) {

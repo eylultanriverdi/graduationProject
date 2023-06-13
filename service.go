@@ -67,6 +67,20 @@ func (service *Service) Register(register models.RegisterDTO) (*models.User, err
 	return createUser, nil
 }
 
+func (service *Service) AddRecipe(recipe models.RecipeDTO) (*models.Recipe, error) {
+	recipeCreate := models.Recipe{
+		RecipeID:     GenerateUUID(8),
+		RecipeDetail: recipe.RecipeDetail,
+	}
+
+	addRecipe, err := service.Repository.AddRecipe(recipeCreate)
+	if err != nil {
+		return nil, err
+	}
+
+	return addRecipe, nil
+}
+
 func (service *Service) NutritionistRegister(registerNutritionist models.NutritionistRegisterDTO) (*models.Nutritionist, error) {
 	nutritionistCreate := models.Nutritionist{
 		ID:          GenerateUUID(8),

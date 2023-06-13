@@ -45,6 +45,26 @@ func (api *Api) RegisterHandler(c *fiber.Ctx) error {
 	return c.JSON(createUser)
 }
 
+func (api *Api) AddRecipe(c *fiber.Ctx) error {
+	recipe := models.RecipeDTO{}
+	err := c.BodyParser(&recipe)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	}
+
+	createRecipe, err := api.Service.AddRecipe(recipe)
+	if err != nil {
+		switch err {
+		case UserAlreadyExistError, PasswordHashingError:
+			return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		default:
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
+	}
+
+	return c.JSON(createRecipe)
+}
+
 func (api *Api) NutritionistRegisterHandler(c *fiber.Ctx) error {
 	nutritionistRegister := models.NutritionistRegisterDTO{}
 	err := c.BodyParser(&nutritionistRegister)
