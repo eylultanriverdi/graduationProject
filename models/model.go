@@ -151,6 +151,11 @@ type CalorieList struct {
 	CreateDate    string    `json:"createDate"`
 }
 
+type NutritionistList struct {
+	NutritionistListId string         `json:"nutritionistListId"`
+	Nutritionist       []Nutritionist `json:"nutritionist"`
+}
+
 type DietCategoryEntity struct {
 	CategoryId     string           `bson:"categoryId"`
 	CategoryName   string           `bson:"categoryName"`

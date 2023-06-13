@@ -198,6 +198,19 @@ func (repository *Repository) CreateCalorieList(calorieList models.CalorieList) 
 
 	return &calorieList, nil
 }
+
+func (repository *Repository) CreateNutritionistList(nutritionistList models.NutritionistList) (*models.NutritionistList, error) {
+	collection := repository.client.Database("nutritionistsList").Collection("nutritionistList")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := collection.InsertOne(ctx, nutritionistList)
+	if err != nil {
+		return nil, err
+	}
+
+	return &nutritionistList, nil
+}
 func (repository *Repository) GetProducts(skip int, limit int) ([]models.Product, error) {
 	collection := repository.client.Database("product").Collection("products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -368,6 +381,34 @@ func (repository *Repository) GetNutritionists() ([]models.Nutritionist, error) 
 	}
 
 	return nutritionists, nil
+}
+
+func (repository *Repository) GetNutritionistList() ([]models.NutritionistList, error) {
+	collection := repository.client.Database("nutritionistsList").Collection("nutritionistList")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var nutritionistList []models.NutritionistList
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var nutritionists models.NutritionistList
+		if err := cursor.Decode(&nutritionists); err != nil {
+			return nil, err
+		}
+		nutritionistList = append(nutritionistList, nutritionists)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return nutritionistList, nil
 }
 
 func (repository *Repository) GetCalorieList() ([]models.CalorieList, error) {

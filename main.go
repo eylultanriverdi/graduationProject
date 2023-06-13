@@ -30,6 +30,8 @@ func SetupApp(api *Api) *fiber.App {
 	app.Get("/profileNutritionist", api.ProfileNutritionistHandler)
 	app.Post("/dietCategory", api.DietCategoryHandler)
 	app.Post("/addList", api.HandleAddListProduct)
+	app.Post("/addNutritionistList", api.HandleAddNutritionistList)
+	app.Get("/nutritionistList", api.GetNutritionistList)
 	app.Get("/products", api.GetProducts)
 	app.Get("/nutritionists", api.GetNutritionists)
 	app.Get("/dietCategories", api.GetDietCategories)

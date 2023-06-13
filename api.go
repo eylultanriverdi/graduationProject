@@ -318,6 +318,30 @@ func (api *Api) HandleAddListProduct(c *fiber.Ctx) error {
 	return c.JSON(createdList)
 }
 
+func (api *Api) HandleAddNutritionistList(c *fiber.Ctx) error {
+	nutritionistList := models.NutritionistList{}
+	err := c.BodyParser(&nutritionistList)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+	}
+
+	// CalorieListId oluşturulması
+	nutritionistList.NutritionistListId = GenerateUUID(8)
+
+	// Repository'de kayıt işlemi yap
+	createdList, err := api.Service.CreateNutritionistList(nutritionistList)
+	if err != nil {
+		switch err {
+		case UserAlreadyExistError, PasswordHashingError:
+			return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		default:
+			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		}
+	}
+
+	return c.JSON(createdList)
+}
+
 func (a *Api) GetProducts(c *fiber.Ctx) error {
 	page := c.Query("page", "1")
 	limit := c.Query("limit", "10") // Varsayılan olarak 10 ürün gösterilecek
@@ -373,6 +397,18 @@ func (a *Api) GetNutritionists(c *fiber.Ctx) error {
 	}
 
 	c.JSON(nutritionists)
+	return nil
+}
+
+func (a *Api) GetNutritionistList(c *fiber.Ctx) error {
+	nutritionistList, err := a.Service.GetNutritionistList()
+
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return err
+	}
+
+	c.JSON(nutritionistList)
 	return nil
 }
 

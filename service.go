@@ -151,6 +151,16 @@ func (service *Service) CreateCalorieList(calorieList models.CalorieList) (*mode
 	return createdList, nil
 }
 
+func (service *Service) CreateNutritionistList(nutritionistList models.NutritionistList) (*models.NutritionistList, error) {
+	// Repository'de kayıt işlemi yap
+	createdNutritionistList, err := service.Repository.CreateNutritionistList(nutritionistList)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdNutritionistList, nil
+}
+
 func (service *Service) GetProducts(page int, limit int) ([]models.Product, error) {
 	skip := (page - 1) * limit
 
@@ -191,6 +201,16 @@ func (service *Service) GetNutritionists() ([]models.Nutritionist, error) {
 	}
 
 	return nutritionists, nil
+}
+
+func (service *Service) GetNutritionistList() ([]models.NutritionistList, error) {
+	nutritionistList, err := service.Repository.GetNutritionistList()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nutritionistList, nil
 }
 
 func (service *Service) GetCalorieList() ([]models.CalorieList, error) {
