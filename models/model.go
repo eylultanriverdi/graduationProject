@@ -245,15 +245,18 @@ type SigninNutritionistDTO struct {
 
 type Recipe struct {
 	RecipeID     string `json:"recipeID"`
+	RecipeName   string `json:"recipeName"`
 	RecipeDetail string `json:"recipeDetail"`
 }
 
 type RecipeDTO struct {
 	RecipeID     string `json:"recipeID"`
+	RecipeName   string `json:"recipeName"`
 	RecipeDetail string `json:"recipeDetail"`
 }
 
 type RecipeEntity struct {
 	RecipeID     string `bson:"recipeID"`
+	RecipeName   string `bson:"recipeName"`
 	RecipeDetail string `bson:"recipeDetail"`
 }

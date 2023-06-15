@@ -432,6 +432,18 @@ func (a *Api) GetNutritionistList(c *fiber.Ctx) error {
 	return nil
 }
 
+func (a *Api) GetRecipeList(c *fiber.Ctx) error {
+	recipeList, err := a.Service.GetRecipeList()
+
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return err
+	}
+
+	c.JSON(recipeList)
+	return nil
+}
+
 func (a *Api) GetDietCategories(c *fiber.Ctx) error {
 	calorieInfoList, err := a.Service.GetDietCategories()
 

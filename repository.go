@@ -87,6 +87,7 @@ func ConvertUserEntityToUser(userEntity models.UserEntity) models.User {
 func ConvertRecipeEntityToNutritionist(recipeEntity models.RecipeEntity) models.Recipe {
 	return models.Recipe{
 		RecipeID:     recipeEntity.RecipeID,
+		RecipeName:   recipeEntity.RecipeName,
 		RecipeDetail: recipeEntity.RecipeDetail,
 	}
 }
@@ -447,6 +448,34 @@ func (repository *Repository) GetNutritionistList() ([]models.NutritionistList, 
 	}
 
 	return nutritionistList, nil
+}
+
+func (repository *Repository) GetRecipeList() ([]models.Recipe, error) {
+	collection := repository.client.Database("recipes").Collection("recipe")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var recipeList []models.Recipe
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var recipes models.Recipe
+		if err := cursor.Decode(&recipes); err != nil {
+			return nil, err
+		}
+		recipeList = append(recipeList, recipes)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return recipeList, nil
 }
 
 func (repository *Repository) GetCalorieList() ([]models.CalorieList, error) {

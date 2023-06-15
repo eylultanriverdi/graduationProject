@@ -37,5 +37,6 @@ func SetupApp(api *Api) *fiber.App {
 	app.Get("/dietCategories", api.GetDietCategories)
 	app.Get("/calorieInfo", api.GetCalorieList)
 	app.Post("/addRecipe", api.AddRecipe)
+	app.Get("/recipeList", api.GetRecipeList)
 	return app
 }

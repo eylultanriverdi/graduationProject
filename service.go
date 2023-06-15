@@ -70,6 +70,7 @@ func (service *Service) Register(register models.RegisterDTO) (*models.User, err
 func (service *Service) AddRecipe(recipe models.RecipeDTO) (*models.Recipe, error) {
 	recipeCreate := models.Recipe{
 		RecipeID:     GenerateUUID(8),
+		RecipeName:   recipe.RecipeName,
 		RecipeDetail: recipe.RecipeDetail,
 	}
 
@@ -225,6 +226,16 @@ func (service *Service) GetNutritionistList() ([]models.NutritionistList, error)
 	}
 
 	return nutritionistList, nil
+}
+
+func (service *Service) GetRecipeList() ([]models.Recipe, error) {
+	recipeList, err := service.Repository.GetRecipeList()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return recipeList, nil
 }
 
 func (service *Service) GetCalorieList() ([]models.CalorieList, error) {
