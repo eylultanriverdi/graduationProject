@@ -157,7 +157,6 @@ func (service *Service) GetDietCategory(dietCategory models.DietCategoryDTO) (*m
 }
 
 func (service *Service) CreateCalorieList(calorieList models.CalorieList) (*models.CalorieList, error) {
-	// Repository'de kayıt işlemi yap
 	createdList, err := service.Repository.CreateCalorieList(calorieList)
 	if err != nil {
 		return nil, err
@@ -167,7 +166,6 @@ func (service *Service) CreateCalorieList(calorieList models.CalorieList) (*mode
 }
 
 func (service *Service) CreateNutritionistList(nutritionistList models.NutritionistList) (*models.NutritionistList, error) {
-	// Repository'de kayıt işlemi yap
 	createdNutritionistList, err := service.Repository.CreateNutritionistList(nutritionistList)
 	if err != nil {
 		return nil, err
@@ -179,7 +177,6 @@ func (service *Service) CreateNutritionistList(nutritionistList models.Nutrition
 func (service *Service) GetProducts(page int, limit int) ([]models.Product, error) {
 	skip := (page - 1) * limit
 
-	// Sayfalama parametrelerini kullanarak veri getirme işlemini gerçekleştirin
 	productsList, err := service.Repository.GetProducts(skip, limit)
 	if err != nil {
 		return nil, err
@@ -189,7 +186,6 @@ func (service *Service) GetProducts(page int, limit int) ([]models.Product, erro
 }
 
 func (service *Service) GetTotalProducts() (int, error) {
-	// Veritabanında toplam ürün sayısını döndüren bir işlev ekleyin
 	total, err := service.Repository.GetTotalProducts()
 	if err != nil {
 		return 0, err

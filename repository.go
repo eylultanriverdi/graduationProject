@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -521,7 +520,6 @@ func (repository *Repository) GetByEmail(email string) (*models.User, error) {
 
 	user := ConvertUserEntityToUser(entity)
 
-	fmt.Println(user, "user")
 	return &user, nil
 }
 
@@ -540,7 +538,6 @@ func (repository *Repository) GetByEmailNutritionist(email string) (*models.Nutr
 
 	nutritionist := ConvertNutritionistEntityToNutritionist(entity)
 
-	fmt.Println(nutritionist, "nutritionist")
 	return &nutritionist, nil
 }
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/base64"
-	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -32,7 +31,6 @@ func (api *Api) RegisterHandler(c *fiber.Ctx) error {
 	}
 
 	createUser, err := api.Service.Register(register)
-	fmt.Println(createUser, "createUser")
 	if err != nil {
 		switch err {
 		case UserAlreadyExistError, PasswordHashingError:
@@ -91,14 +89,11 @@ func (api *Api) ProductHandler(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
-
-	// Decode base64 string to byte array
 	productImage, err := base64.StdEncoding.DecodeString(product.ProductImage)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
-	// Create Product instance with byte array
 	createProduct, err := api.Service.GetProduct(models.ProductCategoryDTO{
 		ProductName:       product.ProductName,
 		Description:       product.Description,
@@ -130,7 +125,6 @@ func (api *Api) SigninHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
-	// Kullanıcının kimlik doğrulaması gerçekleştiriliyor
 	user, err := api.Service.Signin(signin)
 	if err != nil {
 		if err == models.UserNotFoundError {
@@ -141,19 +135,15 @@ func (api *Api) SigninHandler(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 		}
 	}
-
-	// Token oluşturuluyor
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["userID"] = user.ID
 
-	// Token imzalanıyor
 	tokenString, err := token.SignedString([]byte("xL#j9E7o!P1k@9qR3tZw5y"))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 
-	// Token yanıt olarak döndürülüyor
 	return c.JSON(fiber.Map{
 		"token": tokenString,
 	})
@@ -166,7 +156,6 @@ func (api *Api) SigninNutritionistHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
-	// Kullanıcının kimlik doğrulaması gerçekleştiriliyor
 	nutritionist, err := api.Service.SigninNutritionist(signin)
 	if err != nil {
 		if err == models.UserNotFoundError {
@@ -178,18 +167,15 @@ func (api *Api) SigninNutritionistHandler(c *fiber.Ctx) error {
 		}
 	}
 
-	// Token oluşturuluyor
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["userID"] = nutritionist.ID
 
-	// Token imzalanıyor
 	tokenString, err := token.SignedString([]byte("xL#j9E7o!P1k@9qR3tZw5y"))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 
-	// Token yanıt olarak döndürülüyor
 	return c.JSON(fiber.Map{
 		"token": tokenString,
 	})
@@ -198,14 +184,9 @@ func (api *Api) SigninNutritionistHandler(c *fiber.Ctx) error {
 func (api *Api) ProfileHandler(c *fiber.Ctx) error {
 	tokenString := strings.TrimSpace(strings.TrimPrefix(c.Get("Authorization"), "Bearer "))
 
-	// Tokenı isteğin başlığından alınabilir
-
-	// Token doğrulanıyor
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte("xL#j9E7o!P1k@9qR3tZw5y"), nil
 	})
-
-	fmt.Println(token, "token")
 
 	if err != nil || !token.Valid {
 		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
@@ -221,7 +202,6 @@ func (api *Api) ProfileHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
 	}
 
-	// Profil bilgileri alınıyor
 	user, err := api.Service.GetProfile(userID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -236,14 +216,9 @@ func (api *Api) ProfileHandler(c *fiber.Ctx) error {
 func (api *Api) ProfileNutritionistHandler(c *fiber.Ctx) error {
 	tokenString := strings.TrimSpace(strings.TrimPrefix(c.Get("Authorization"), "Bearer "))
 
-	// Tokenı isteğin başlığından alınabilir
-
-	// Token doğrulanıyor
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte("xL#j9E7o!P1k@9qR3tZw5y"), nil
 	})
-
-	fmt.Println(token, "token")
 
 	if err != nil || !token.Valid {
 		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
@@ -259,7 +234,6 @@ func (api *Api) ProfileNutritionistHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
 	}
 
-	// Profil bilgileri alınıyor
 	nutritionist, err := api.Service.GetNutritionistProfile(nutritionistId)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -278,7 +252,6 @@ func (api *Api) DietCategoryHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
-	// Create Product instance with byte array
 	createCategory, err := api.Service.GetDietCategory(models.DietCategoryDTO{
 		CategoryId:     GenerateUUID(8),
 		CategoryName:   dietCategory.CategoryName,
@@ -307,7 +280,6 @@ func (api *Api) HandleAddListProduct(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
-	// TotalCalorie hesaplaması
 	totalCalorie := 0
 	for _, product := range calorieList.Products {
 		calorie, err := strconv.Atoi(product.CalorieValue)
@@ -321,10 +293,8 @@ func (api *Api) HandleAddListProduct(c *fiber.Ctx) error {
 	currentTime := time.Now().Format("2006-01-02")
 	calorieList.CreateDate = currentTime
 
-	// CalorieListId oluşturulması
 	calorieList.CalorieListId = GenerateUUID(8)
 
-	// Repository'de kayıt işlemi yap
 	createdList, err := api.Service.CreateCalorieList(calorieList)
 	if err != nil {
 		switch err {
@@ -345,10 +315,8 @@ func (api *Api) HandleAddNutritionistList(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
-	// CalorieListId oluşturulması
 	nutritionistList.NutritionistListId = GenerateUUID(8)
 
-	// Repository'de kayıt işlemi yap
 	createdList, err := api.Service.CreateNutritionistList(nutritionistList)
 	if err != nil {
 		switch err {
@@ -364,9 +332,8 @@ func (api *Api) HandleAddNutritionistList(c *fiber.Ctx) error {
 
 func (a *Api) GetProducts(c *fiber.Ctx) error {
 	page := c.Query("page", "1")
-	limit := c.Query("limit", "10") // Varsayılan olarak 10 ürün gösterilecek
+	limit := c.Query("limit", "10")
 
-	// page ve limit değerlerini integer'a dönüştürme işlemlerini yapabilirsiniz
 	pageNum, err := strconv.Atoi(page)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Invalid page number")
@@ -381,7 +348,6 @@ func (a *Api) GetProducts(c *fiber.Ctx) error {
 
 	switch err {
 	case nil:
-		// Sayfa sayısını ve toplam ürün sayısını hesapla
 		totalProducts, err := a.Service.GetTotalProducts()
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
@@ -389,7 +355,6 @@ func (a *Api) GetProducts(c *fiber.Ctx) error {
 
 		totalPages := int(math.Ceil(float64(totalProducts) / float64(limitNum)))
 
-		// Sayfalama bilgilerini dön
 		paginationInfo := map[string]interface{}{
 			"currentPage":   pageNum,
 			"totalPages":    totalPages,
